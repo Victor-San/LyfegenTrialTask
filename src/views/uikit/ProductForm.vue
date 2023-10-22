@@ -23,6 +23,14 @@ const { mutate: addProductMutation } = useMutation(
     `
 );
 
+const { mutate: deleteProductMutation } = useMutation(
+    gql`
+        mutation DeleteProduct($productInput: ProductInput) {
+            deleteProduct(productInput: $productInput)
+        }
+    `
+);
+
 const addProduct = async () => {
     try {
         const response = await addProductMutation({
@@ -41,6 +49,27 @@ const addProduct = async () => {
         price.value = null;
     } catch (error) {
         console.error('Error adding product:', error.message);
+    }
+};
+
+const deleteProduct = async (data) => {
+    if (!data.data.brand || !data.data.solution || data.data.packSize === null || data.data.price === null) {
+        console.error('Invalid input for delete operation. Please provide valid product data.');
+        return;
+    }
+
+    try {
+        const response = await deleteProductMutation({
+            productInput: {
+                brand: data.data.brand,
+                solution: data.data.solution,
+                packSize: data.data.packSize,
+                price: data.data.price
+            }
+        });
+        console.log('Product deleted successfully:', response.data.deleteProduct);
+    } catch (error) {
+        console.error('Error deleting product:', error.message);
     }
 };
 
@@ -94,7 +123,7 @@ const products = computed(() => result.value?.allProducts ?? []);
             <Column field="packSize" header="Pack Size"></Column>
             <Column field="price" header="Price"></Column>
             <Column header="Delete"
-                ><template #body="{ data, index }"> <Button @click="console.log(data, index)" icon="pi pi-trash" class="p-button-danger" /> </template
+                ><template #body="{ data }"> <Button @click="deleteProduct({ data })" icon="pi pi-trash" class="p-button-danger" /> </template
             ></Column>
         </DataTable>
     </div>
