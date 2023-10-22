@@ -19,6 +19,11 @@ const router = createRouter({
                     component: () => import('@/views/uikit/ContractForm.vue')
                 },
                 {
+                    path: '/uikit/productform',
+                    name: 'productform',
+                    component: () => import('@/views/uikit/ProductForm.vue')
+                },
+                {
                     path: '/uikit/formlayout',
                     name: 'formlayout',
                     component: () => import('@/views/uikit/FormLayout.vue')
@@ -141,7 +146,6 @@ const router = createRouter({
             name: 'notfound',
             component: () => import('@/views/pages/NotFound.vue')
         },
-
         {
             path: '/auth/login',
             name: 'login',

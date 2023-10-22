@@ -45,7 +45,7 @@ const model = ref([
                     }
                 ]
             },
-            { label: 'Create Product', icon: 'pi pi-fw pi-cart-plus', to: '/uikit/formlayout' }
+            { label: 'Create Product', icon: 'pi pi-fw pi-cart-plus', to: '/uikit/productform' }
         ]
     },
     {
