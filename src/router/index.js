@@ -24,6 +24,11 @@ const router = createRouter({
                     component: () => import('@/views/uikit/ProductForm.vue')
                 },
                 {
+                    path: '/uikit/patientform',
+                    name: 'patientform',
+                    component: () => import('@/views/uikit/PatientForm.vue')
+                },
+                {
                     path: '/uikit/formlayout',
                     name: 'formlayout',
                     component: () => import('@/views/uikit/FormLayout.vue')

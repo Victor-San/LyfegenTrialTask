@@ -7,7 +7,6 @@ const model = ref([
     {
         label: 'Home',
         items: [
-            { label: 'Dashboard', icon: 'pi pi-fw pi-home', to: '/' },
             {
                 label: 'Contracts',
                 icon: 'pi pi-fw pi-clone',
@@ -32,18 +31,7 @@ const model = ref([
             {
                 label: 'Patients',
                 icon: 'pi pi-fw pi-id-card',
-                items: [
-                    {
-                        label: 'Create Patient',
-                        icon: 'pi pi-fw pi-file',
-                        to: '/uikit/contractform'
-                    },
-                    {
-                        label: 'All Patients',
-                        icon: 'pi pi-fw pi-list',
-                        to: '/auth/error'
-                    }
-                ]
+                to: '/uikit/patientform'
             },
             { label: 'Create Product', icon: 'pi pi-fw pi-cart-plus', to: '/uikit/productform' }
         ]
