@@ -86,8 +86,7 @@ const router = createRouter({
                 },
                 {
                     path: '/uikit/menu',
-                    component: () => import('@/views/uikit/Menu.vue'),
-
+                    component: () => import('@/views/uikit/Menu.vue')
                 },
                 {
                     path: '/uikit/message',

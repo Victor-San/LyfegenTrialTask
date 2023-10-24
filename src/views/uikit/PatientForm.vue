@@ -8,19 +8,27 @@ import Column from 'primevue/column';
 const insuranceCompany = ref(null);
 const cancerStage = ref(null);
 const age = ref(null);
-const product = ref(null);
+const selectedProduct = ref(null);
 const treatmentStart = ref(null);
 const os = ref(null);
 const pfs = ref(null);
 
-const { mutate: addProductMutation } = useMutation(
+const { mutate: addPatientMutation } = useMutation(
     gql`
-        mutation CreateProduct($productInput: ProductInput) {
-            createProduct(productInput: $productInput) {
-                brand
-                solution
-                packSize
-                price
+        mutation CreatePatient($patientInput: PatientInput) {
+            createPatient(patientInput: $patientInput) {
+                age
+                cancerStage
+                insuranceCompany
+                os
+                pfs
+                product {
+                    brand
+                    packSize
+                    price
+                    solution
+                }
+                treatmentStart
             }
         }
     `
@@ -34,27 +42,40 @@ const { mutate: deletePatientMutation } = useMutation(
     `
 );
 
-const addProduct = async () => {
+const addPatient = async () => {
+    if (!cancerStage.value || !selectedProduct.value || !treatmentStart.value) {
+        console.error('Invalid input for create operation. Please provide valid patient data.');
+        return;
+    }
     try {
-        const response = await addProductMutation({
-            productInput: {
-                cancerStage: cancerStage.value,
-                product: product.value,
-                treatmentStart: treatmentStart.value
+        const response = await addPatientMutation({
+            patientInput: {
+                insuranceCompany: insuranceCompany.value,
+                cancerStage: parseInt(cancerStage.value),
+                age: parseInt(age.value),
+                product: (({ brand, solution, packSize, price }) => ({
+                    brand,
+                    solution,
+                    packSize,
+                    price
+                }))(selectedProduct.value),
+                treatmentStart: treatmentStart.value,
+                os: os.value,
+                pfs: pfs.value
             }
         });
-        console.log('Product added successfully:', response.data.createProduct);
+        console.log('Patient added successfully:', response.data.createPatient);
         // Reset the form fields after successful submission
         cancerStage.value = null;
-        product.value = null;
+        selectedProduct.value = null;
         treatmentStart.value = null;
     } catch (error) {
-        console.error('Error adding product:', error.message);
+        console.error('Error adding patient:', error.message);
     }
 };
 
 const deletePatient = async (data) => {
-    if (!data.data.cancerStage || !data.data.product || !data.data.treatmentStart || !data.data.os || !data.data.pfs) {
+    if (!data.data.cancerStage || !data.data.product || !data.data.treatmentStart) {
         console.error('Invalid input for delete operation. Please provide valid patient data.');
         return;
     }
@@ -82,7 +103,7 @@ const deletePatient = async (data) => {
     }
 };
 
-const { result } = useQuery(gql`
+const { result: patientResult } = useQuery(gql`
     query AllPatients {
         allPatients {
             insuranceCompany
@@ -101,7 +122,19 @@ const { result } = useQuery(gql`
     }
 `);
 
-const patients = computed(() => result.value?.allPatients ?? []);
+const patients = computed(() => patientResult.value?.allPatients ?? []);
+
+const { result: productResult } = useQuery(gql`
+    query Product {
+        allProducts {
+            brand
+            price
+            packSize
+            solution
+        }
+    }
+`);
+const products = computed(() => productResult.value?.allProducts ?? []);
 </script>
 
 <template>
@@ -116,20 +149,24 @@ const patients = computed(() => result.value?.allPatients ?? []);
         <div class="field grid">
             <label for="cancerStage" class="col-12 mb-2 md:col-2 md:mb-0">Cancer Stage</label>
             <div class="col-12 md:col-10">
-                <InputText v-model="cancerStage" id="cancerStage" type="text" />
+                <InputText v-model="cancerStage" id="cancerStage" type="number" />
             </div>
         </div>
         <div class="field grid">
             <label for="age" class="col-12 mb-2 md:col-2 md:mb-0">Age</label>
             <div class="col-12 md:col-10">
-                <InputText v-model="age" id="age" type="text" />
+                <InputText v-model="age" id="age" type="number" />
             </div>
         </div>
         <div class="field grid">
-            <label for="product" class="col-12 mb-2 md:col-2 md:mb-0">Product</label>
-            <div class="col-12 md:col-10">
-                <InputText v-model="product" id="product" type="text" />
-            </div>
+            <label for="productTable" class="col-12 mb-2 md:col-2 md:mb-0">Product</label>
+            <DataTable v-model:selection="selectedProduct" :value="products" id="productTable">
+                <Column selectionMode="single" headerStyle="width: 3rem"></Column>
+                <Column field="brand" header="Brand"></Column>
+                <Column field="solution" header="Solution"></Column>
+                <Column field="packSize" header="Pack Size"></Column>
+                <Column field="price" header="Price"></Column>
+            </DataTable>
         </div>
         <div class="field grid">
             <label for="treatmentStart" class="col-12 mb-2 md:col-2 md:mb-0">Treatment Start</label>
@@ -149,13 +186,14 @@ const patients = computed(() => result.value?.allPatients ?? []);
                 <InputText v-model="pfs" id="pfs" type="date" />
             </div>
         </div>
-        <Button @click="addProduct" label="Submit" class="mr-2 mb-2"></Button>
+        <Button @click="addPatient" label="Submit" class="mr-2 mb-2"></Button>
     </div>
 
     <div className="card">
         <DataTable :value="patients" tableStyle="min-width: 50rem">
-            <Column field="cancerStage" header="Disease Status"></Column>
-            <Column field="product.brand product.solution" header="Product"></Column>
+            <Column field="insuranceCompany" header="Insurance Company"></Column>
+            <Column field="cancerStage" header="Cancer Stage"></Column>
+            <Column field="product.brand" header="Product"></Column>
             <Column field="treatmentStart" header="Treatment Start"></Column>
             <Column field="os" header="OS"></Column>
             <Column field="pfs" header="PFS"></Column>
