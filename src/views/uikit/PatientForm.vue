@@ -5,11 +5,13 @@ import { ref, computed } from 'vue';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 
-const checkboxValue = ref([]);
-
-const diseaseStatus = ref(null);
+const insuranceCompany = ref(null);
+const cancerStage = ref(null);
+const age = ref(null);
 const product = ref(null);
 const treatmentStart = ref(null);
+const os = ref(null);
+const pfs = ref(null);
 
 const { mutate: addProductMutation } = useMutation(
     gql`
@@ -36,14 +38,14 @@ const addProduct = async () => {
     try {
         const response = await addProductMutation({
             productInput: {
-                diseaseStatus: diseaseStatus.value,
+                cancerStage: cancerStage.value,
                 product: product.value,
                 treatmentStart: treatmentStart.value
             }
         });
         console.log('Product added successfully:', response.data.createProduct);
         // Reset the form fields after successful submission
-        diseaseStatus.value = null;
+        cancerStage.value = null;
         product.value = null;
         treatmentStart.value = null;
     } catch (error) {
@@ -52,23 +54,17 @@ const addProduct = async () => {
 };
 
 const deletePatient = async (data) => {
-    if (!data.data.diseaseStatus || !data.data.product || !data.data.treatmentStart || !data.data.os || !data.data.pfs) {
+    if (!data.data.cancerStage || !data.data.product || !data.data.treatmentStart || !data.data.os || !data.data.pfs) {
         console.error('Invalid input for delete operation. Please provide valid patient data.');
         return;
     }
 
     try {
-        console.log(
-            (({ brand, solution, packSize, price }) => ({
-                brand,
-                solution,
-                packSize,
-                price
-            }))(data.data.product)
-        );
         const response = await deletePatientMutation({
             patientInput: {
-                diseaseStatus: data.data.diseaseStatus,
+                insuranceCompany: data.data.insuranceCompany,
+                cancerStage: data.data.cancerStage,
+                age: data.data.age,
                 product: (({ brand, solution, packSize, price }) => ({
                     brand,
                     solution,
@@ -89,9 +85,9 @@ const deletePatient = async (data) => {
 const { result } = useQuery(gql`
     query AllPatients {
         allPatients {
-            diseaseStatus
-            os
-            pfs
+            insuranceCompany
+            cancerStage
+            age
             product {
                 brand
                 packSize
@@ -99,6 +95,8 @@ const { result } = useQuery(gql`
                 solution
             }
             treatmentStart
+            os
+            pfs
         }
     }
 `);
@@ -110,9 +108,21 @@ const patients = computed(() => result.value?.allPatients ?? []);
     <div className="card">
         <h5>Add Patient</h5>
         <div class="field grid">
-            <label for="disease" class="col-12 mb-2 md:col-2 md:mb-0">Disease Status</label>
+            <label for="insuranceCompany" class="col-12 mb-2 md:col-2 md:mb-0">Insurance Company</label>
             <div class="col-12 md:col-10">
-                <InputText v-model="diseaseStatus" id="disease" type="text" />
+                <InputText v-model="insuranceCompany" id="insuranceCompany" type="text" />
+            </div>
+        </div>
+        <div class="field grid">
+            <label for="cancerStage" class="col-12 mb-2 md:col-2 md:mb-0">Cancer Stage</label>
+            <div class="col-12 md:col-10">
+                <InputText v-model="cancerStage" id="cancerStage" type="text" />
+            </div>
+        </div>
+        <div class="field grid">
+            <label for="age" class="col-12 mb-2 md:col-2 md:mb-0">Age</label>
+            <div class="col-12 md:col-10">
+                <InputText v-model="age" id="age" type="text" />
             </div>
         </div>
         <div class="field grid">
@@ -127,18 +137,16 @@ const patients = computed(() => result.value?.allPatients ?? []);
                 <InputText v-model="treatmentStart" id="treatmentStart" type="date" />
             </div>
         </div>
-        <div class="grid right">
-            <div class="col-12 md:col-4">
-                <div class="field-checkbox mb-0">
-                    <Checkbox id="checkOption1" name="option" value="os" v-model="checkboxValue" />
-                    <label for="checkOption1">OS</label>
-                </div>
+        <div class="field grid">
+            <label for="os" class="col-12 mb-2 md:col-2 md:mb-0">OS</label>
+            <div class="col-12 md:col-10">
+                <InputText v-model="os" id="os" type="date" />
             </div>
-            <div class="col-12 md:col-4">
-                <div class="field-checkbox mb-0">
-                    <Checkbox id="checkOption2" name="option" value="pfs" v-model="checkboxValue" />
-                    <label for="checkOption2">PFS</label>
-                </div>
+        </div>
+        <div class="field grid">
+            <label for="pfs" class="col-12 mb-2 md:col-2 md:mb-0">PFS</label>
+            <div class="col-12 md:col-10">
+                <InputText v-model="pfs" id="pfs" type="date" />
             </div>
         </div>
         <Button @click="addProduct" label="Submit" class="mr-2 mb-2"></Button>
@@ -146,7 +154,7 @@ const patients = computed(() => result.value?.allPatients ?? []);
 
     <div className="card">
         <DataTable :value="patients" tableStyle="min-width: 50rem">
-            <Column field="diseaseStatus" header="Disease Status"></Column>
+            <Column field="cancerStage" header="Disease Status"></Column>
             <Column field="product.brand product.solution" header="Product"></Column>
             <Column field="treatmentStart" header="Treatment Start"></Column>
             <Column field="os" header="OS"></Column>
@@ -157,8 +165,3 @@ const patients = computed(() => result.value?.allPatients ?? []);
         </DataTable>
     </div>
 </template>
-<style scoped>
-.right {
-    padding-left: 10em;
-}
-</style>
