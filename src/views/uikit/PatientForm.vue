@@ -43,7 +43,7 @@ const { mutate: deletePatientMutation } = useMutation(
 );
 
 const addPatient = async () => {
-    if (!cancerStage.value || !selectedProduct.value || !treatmentStart.value) {
+    if (!insuranceCompany.value || !cancerStage.value || !selectedProduct.value || !treatmentStart.value) {
         console.error('Invalid input for create operation. Please provide valid patient data.');
         return;
     }
@@ -66,20 +66,19 @@ const addPatient = async () => {
         });
         console.log('Patient added successfully:', response.data.createPatient);
         // Reset the form fields after successful submission
+        insuranceCompany.value = null
         cancerStage.value = null;
+        age.value = null;
         selectedProduct.value = null;
         treatmentStart.value = null;
+        os.value = null;
+        pfs.value = null;
     } catch (error) {
         console.error('Error adding patient:', error.message);
     }
 };
 
 const deletePatient = async (data) => {
-    if (!data.data.cancerStage || !data.data.product || !data.data.treatmentStart) {
-        console.error('Invalid input for delete operation. Please provide valid patient data.');
-        return;
-    }
-
     try {
         const response = await deletePatientMutation({
             patientInput: {
@@ -193,6 +192,7 @@ const products = computed(() => productResult.value?.allProducts ?? []);
         <DataTable :value="patients" tableStyle="min-width: 50rem">
             <Column field="insuranceCompany" header="Insurance Company"></Column>
             <Column field="cancerStage" header="Cancer Stage"></Column>
+            <Column field="age" header="Age"></Column>
             <Column field="product.brand" header="Product"></Column>
             <Column field="treatmentStart" header="Treatment Start"></Column>
             <Column field="os" header="OS"></Column>

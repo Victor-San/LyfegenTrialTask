@@ -53,11 +53,6 @@ const addProduct = async () => {
 };
 
 const deleteProduct = async (data) => {
-    if (!data.data.brand || !data.data.solution || data.data.packSize === null || data.data.price === null) {
-        console.error('Invalid input for delete operation. Please provide valid product data.');
-        return;
-    }
-
     try {
         const response = await deleteProductMutation({
             productInput: {
