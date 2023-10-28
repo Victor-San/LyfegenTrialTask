@@ -10,8 +10,8 @@ const cancerStage = ref(null);
 const age = ref(null);
 const selectedProduct = ref(null);
 const treatmentStart = ref(null);
-const os = ref(null);
-const pfs = ref(null);
+const death = ref(null);
+const progression = ref(null);
 
 const { mutate: addPatientMutation } = useMutation(
     gql`
@@ -20,8 +20,8 @@ const { mutate: addPatientMutation } = useMutation(
                 age
                 cancerStage
                 insuranceCompany
-                os
-                pfs
+                death
+                progression
                 product {
                     brand
                     packSize
@@ -60,19 +60,19 @@ const addPatient = async () => {
                     price
                 }))(selectedProduct.value),
                 treatmentStart: treatmentStart.value,
-                os: os.value,
-                pfs: pfs.value
+                death: death.value,
+                progression: progression.value
             }
         });
         console.log('Patient added successfully:', response.data.createPatient);
         // Reset the form fields after successful submission
-        insuranceCompany.value = null
+        insuranceCompany.value = null;
         cancerStage.value = null;
         age.value = null;
         selectedProduct.value = null;
         treatmentStart.value = null;
-        os.value = null;
-        pfs.value = null;
+        death.value = null;
+        progression.value = null;
     } catch (error) {
         console.error('Error adding patient:', error.message);
     }
@@ -92,8 +92,8 @@ const deletePatient = async (data) => {
                     price
                 }))(data.data.product),
                 treatmentStart: data.data.treatmentStart,
-                os: data.data.os,
-                pfs: data.data.pfs
+                death: data.data.death,
+                progression: data.data.progression
             }
         });
         console.log('Patient deleted successfully:', response.data.deletePatient);
@@ -115,8 +115,8 @@ const { result: patientResult } = useQuery(gql`
                 solution
             }
             treatmentStart
-            os
-            pfs
+            death
+            progression
         }
     }
 `);
@@ -174,15 +174,15 @@ const products = computed(() => productResult.value?.allProducts ?? []);
             </div>
         </div>
         <div class="field grid">
-            <label for="os" class="col-12 mb-2 md:col-2 md:mb-0">OS</label>
+            <label for="death" class="col-12 mb-2 md:col-2 md:mb-0">Death</label>
             <div class="col-12 md:col-10">
-                <InputText v-model="os" id="os" type="date" />
+                <InputText v-model="death" id="death" type="date" />
             </div>
         </div>
         <div class="field grid">
-            <label for="pfs" class="col-12 mb-2 md:col-2 md:mb-0">PFS</label>
+            <label for="progression" class="col-12 mb-2 md:col-2 md:mb-0">Progression</label>
             <div class="col-12 md:col-10">
-                <InputText v-model="pfs" id="pfs" type="date" />
+                <InputText v-model="progression" id="progression" type="date" />
             </div>
         </div>
         <Button @click="addPatient" label="Submit" class="mr-2 mb-2"></Button>
@@ -195,8 +195,8 @@ const products = computed(() => productResult.value?.allProducts ?? []);
             <Column field="age" header="Age"></Column>
             <Column field="product.brand" header="Product"></Column>
             <Column field="treatmentStart" header="Treatment Start"></Column>
-            <Column field="os" header="OS"></Column>
-            <Column field="pfs" header="PFS"></Column>
+            <Column field="death" header="Death"></Column>
+            <Column field="progression" header="Progression"></Column>
             <Column header="Delete"
                 ><template #body="{ data }"> <Button @click="deletePatient({ data })" icon="pi pi-trash" class="p-button-danger" /> </template
             ></Column>

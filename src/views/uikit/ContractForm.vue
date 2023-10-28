@@ -113,8 +113,8 @@ const { result: contractResult } = useQuery(gql`
                 cancerStage
                 insuranceCompany
                 treatmentStart
-                os
-                pfs
+                death
+                progression
             }
         }
     }
@@ -217,8 +217,8 @@ const products = computed(() => productResult.value?.allProducts ?? []);
                         <Column field="age" header="Age"></Column>
                         <Column field="product.brand" header="Product"></Column>
                         <Column field="treatmentStart" header="Treatment Start"></Column>
-                        <Column field="os" header="OS"></Column>
-                        <Column field="pfs" header="PFS"></Column>
+                        <Column field="death" header="Death"></Column>
+                        <Column field="progression" header="Progression"></Column>
                     </DataTable>
                 </div>
             </template>

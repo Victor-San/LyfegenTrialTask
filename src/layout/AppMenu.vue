@@ -17,14 +17,9 @@ const model = ref([
                         to: '/uikit/contractform'
                     },
                     {
-                        label: 'All Contracts',
-                        icon: 'pi pi-fw pi-list',
-                        to: '/auth/error'
-                    },
-                    {
                         label: 'Contract Status',
                         icon: 'pi pi-fw pi-check-square',
-                        to: '/auth/error'
+                        to: '/auth/contractstatus'
                     }
                 ]
             },
