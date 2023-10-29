@@ -60,10 +60,10 @@ const addContract = async () => {
                     price
                 }))(selectedProduct.value),
                 duration: duration.value,
-                ppp1: parseFloat(ppp1.value),
-                ppp2: parseFloat(ppp2.value),
-                ppp3: parseFloat(ppp3.value),
-                ppp4: parseFloat(ppp4.value)
+                ppp1: parseFloat(ppp1.value / 100),
+                ppp2: parseFloat(ppp2.value / 100),
+                ppp3: parseFloat(ppp3.value / 100),
+                ppp4: parseFloat(ppp4.value / 100)
             }
         });
         console.log('Contract added successfully:', response.data.createContract);
@@ -162,27 +162,19 @@ const products = computed(() => productResult.value?.allProducts ?? []);
         </div>
         <div class="field grid">
             <label for="ppp1" class="col-12 mb-2 md:col-2 md:mb-0">Price Per Patient 1.</label>
-            <div class="col-12 md:col-10">
-                <InputText v-model="ppp1" id="ppp1" type="number" />
-            </div>
+            <div class="col-12 md:col-10"><InputText v-model="ppp1" id="ppp1" type="number" /> %</div>
         </div>
         <div class="field grid">
             <label for="ppp2" class="col-12 mb-2 md:col-2 md:mb-0">Price Per Patient 2.</label>
-            <div class="col-12 md:col-10">
-                <InputText v-model="ppp2" id="ppp2" type="number" />
-            </div>
+            <div class="col-12 md:col-10"><InputText v-model="ppp2" id="ppp2" type="number" /> %</div>
         </div>
         <div class="field grid">
             <label for="ppp3" class="col-12 mb-2 md:col-2 md:mb-0">Price Per Patient 3.</label>
-            <div class="col-12 md:col-10">
-                <InputText v-model="ppp3" id="ppp3" type="number" />
-            </div>
+            <div class="col-12 md:col-10"><InputText v-model="ppp3" id="ppp3" type="number" /> %</div>
         </div>
         <div class="field grid">
             <label for="ppp4" class="col-12 mb-2 md:col-2 md:mb-0">Price Per Patient 4.</label>
-            <div class="col-12 md:col-10">
-                <InputText v-model="ppp4" id="ppp4" type="number" />
-            </div>
+            <div class="col-12 md:col-10"><InputText v-model="ppp4" id="ppp4" type="number" /> %</div>
         </div>
         <Button @click="addContract" label="Submit" class="mr-2 mb-2"></Button>
     </div>
@@ -191,7 +183,8 @@ const products = computed(() => productResult.value?.allProducts ?? []);
         <DataTable v-model:expandedRows="expandedRows" :value="contracts" dataKey="_id" tableStyle="min-width: 60rem">
             <Column expander style="width: 5rem" />
             <Column field="insuranceCompany" header="Insurance Company"></Column>
-            <Column field="product.brand" header="Product"></Column>
+            <Column field="product.brand" header="Brand"></Column>
+            <Column field="product.solution" header="Product"></Column>
             <Column field="duration" header="Duration"></Column>
             <Column field="ppp1" header="Price Per Patient 1.">
                 <template #body="contract"> {{ parseFloat(contract.data.ppp1) * 100 }}% </template>

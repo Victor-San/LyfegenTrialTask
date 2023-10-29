@@ -19,7 +19,7 @@ const model = ref([
                     {
                         label: 'Contract Status',
                         icon: 'pi pi-fw pi-check-square',
-                        to: '/auth/contractstatus'
+                        to: '/uikit/contractstatus'
                     }
                 ]
             },
